@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<routes>
+    <route>
+        <name>Homepage</name>
+        <path>/</path>
+        <class>\Slab\Controllers\Page</class>
+        <parameters>
+            <pageTitle>Welcome to SlabPHP</pageTitle>
+        </parameters>
+    </route>
+</routes>
