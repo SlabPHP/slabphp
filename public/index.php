@@ -11,7 +11,6 @@ try
     $bootstrap = new \Slab\Bootstrap(__DIR__);
     $bootstrap
         ->pushNamespace('SlabLanding')
-        ->setDefaultServerName('local.slabphp.com')
         ->setDefaultNamespace('SlabLanding');
 
     $bootstrap->bootSystem();

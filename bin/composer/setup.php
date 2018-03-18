@@ -147,8 +147,8 @@ class SlabSetup
 
         echo 'Copying default SlabPHP public directory.' . PHP_EOL;
 
-        $slabPublic = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..';
-        $this->copyDirectory($slabPublic, $dir . DIRECTORY_SEPARATOR . 'public');
+        $slabPublic = realpath(__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'public');
+        $this->copyDirectory($slabPublic, $dir);
         return true;
     }
 
@@ -170,6 +170,7 @@ class SlabSetup
             }
             else
             {
+                echo 'Copying ' . $source . DIRECTORY_SEPARATOR . $file . ' to ' . $destination . DIRECTORY_SEPARATOR . $file . PHP_EOL;
                 copy($source . DIRECTORY_SEPARATOR . $file, $destination . DIRECTORY_SEPARATOR . $file);
             }
         }
