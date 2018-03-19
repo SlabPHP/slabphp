@@ -27,9 +27,6 @@
       "Slab\\Tests\\": "tests/"
     }
   },
-  "suggest": {
-    "monolog/monolog": "PSR compatible logger library."
-  },
   "require": {
     "psr/log": "^1.0",
     "slabphp/component-interfaces": "^0.2",
@@ -45,7 +42,6 @@
     "slabphp/database": "^0.1.0",
     "slabphp/controllers": "^0.1.1",
     "slabphp/landing": "^0.1.0",
-    "monolog/monolog": "^1.23",
-    "ericsalerno/dumpster": "^1.0"
+    "monolog/monolog": "^1.23"
   }
 }
