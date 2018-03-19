@@ -2,7 +2,7 @@
 
 This is the core SlabPHP library. The purpose of it is to create a system object, select an appropriate controller, execute it, and display the result. That's the general flow of every of any particular SlabPHP request. This library depends on all the other SlabPHP libraries.  
 
-* [Installation and Setup Guide](docs/implementation.md)
+* [Installation and Setup Guide](docs/installation.md)
 * [History and More Info](docs/history.md)
 * [Bootstrap Documentation](docs/bootstrap.md)
 * [System Object Documentation](docs/system.md)
