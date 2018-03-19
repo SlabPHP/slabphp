@@ -1,156 +1,40 @@
 # SlabPHP Web Framework
 
-This framework was started in early 2009 under a different name. Some of the ideas presented are obselete but the framework is pretty neat so it's being reformatted for public consumption. This is mostly an academic exercise as we've already internally switched to other technologies. Some of the interface patterns were designed by Michael Venezia, a friend and mentor to the author of this library.
+This is the core SlabPHP library. The purpose of it is to create a system object, select an appropriate controller, execute it, and display the result. That's the general flow of every of any particular SlabPHP request. This library depends on all the other SlabPHP libraries.  
 
-It is known by the authors of this library that inheritance is sometimes frowned-upon and the use of protected values without proper encapsulation is considered bad design. It is also known that some of the methods in this library may be considered anti-patterns. This is mostly being released as an academic exercise.
+* [Installation and Setup Guide](docs/implementation.md)
+* [History and More Info](docs/history.md)
+* [Bootstrap Documentation](docs/bootstrap.md)
+* [System Object Documentation](docs/system.md)
 
-We will most likely continue to keep it updated and maintained but major architectural modifications most likely won't occur.
+## SlabPHP Components
 
-## Installation
+SlabPHP is made of a bunch of atomic components that can be used separately or together. The components rely on a shared library of interfaces. You can use the pre-built components or even write your own. Some libraries are also optional so feel free to bring your own logger, database, session handler, etc.
 
-This is preliminary but assuming the final installation and usage will be similar to this:
-
-    composer require slabphp/slabphp
-
-Then crafting an index.php similar to the following:
-
-    <?php
-
-    require_once(__DIR__ . '/../vendor/autoload.php');
-
-    $system = new \SlabPHP\Bootstrap();
-
-    $system->addSite('example.com', 'ExampleSiteNamespace');
-
-    $system->bootSystem();
-
-## Methodologies
-
-SlabPHP is built around several methodologies that govern and guide the development of SlabPHP applications. It is not meant as a RAD style framework but actually tends more towards the verbose. This is to hopefully promote re-use of code to increase integrity of the code written.
-
-### Methodology One - Polymorphic Hierarchy
-
-During initialization of the SlabPHP framework, you can push namespaces onto an internal hierarchy and then use the findClass method of the system object to resolve the appropriate class at runtime. The namespace hierarchy always begins with SlabPHP\ and ends with your currently selected application's namespace. When you push a new one, it will be between those two in the order in which you push them. For example, lets say during initialization this is your booting sequence:
-
-    $system =  new \SlabPHP\Bootstrap();
-    $system->pushNamespace('Shared');
-    $system->addSite('example.com', 'ExampleSiteNamespace');
-    $system->bootSystem();
-
-    //Namespace hierarchy is now \SlabPHP\, \Shared\, \ExampleSiteNamespace\
-
-If in your \ExampleSiteNamespace\Controllers\Homepage class, you do this:
-
-    $object = $this->getSystem()->findClass('Utilities\Sausage');
-
-SlabPHP will attempt to return a \ExampleSiteNamespace\Utilities\Sausage class if it exists, but if it doesn't it will attempt to private a \Shared\Utilities\Sausage class and if that doesn't exist, it will attempt to provide a \SlabPHP\Utilities\Sausage class before returning nothing.
-
-Many base level SlabPHP classes use the findClass() functionality so at your application level, you can actually override functionality of the framework by specifying a class in the hierarchy above.
-
-### Methodology Two - Pipeline-based Controller Execution
-
-Controllers don't need to work this way however it was intended that they are built using three different pipelines. The input, operation, and output pipelines. The purpose of this is to aid re-use by allowing child controllers to add to or modify methods of a parent controller.
-
-An example controller where you get a GET parameter, double it, and set it in the template for output may look like:
-
-    namespace ExampleSiteNamespace\Controllers;
-
-    class Doubler extends \SlabPHP\Controllers\Template
-    {
-        /**
-         * @var integer
-         */
-        protected $parameter;
-
-        /**
-         * Set Inputs
-         */
-        protected function setInputs()
-        {
-            parent::setInputs();
-
-            $this->inputs
-                ->determineGetParameter();
-        }
-
-        /**
-         * Get parameter value
-         */
-        protected function determineGetParameter()
-        {
-            $this->parameter = $this->getSystem()->input->get('value');
-        }
-
-        /**
-         * Set operations pipeline
-         */
-        protected function setOperations()
-        {
-            parent::setOperations();
-
-            $this->operations
-                ->performParameterOperation();
-        }
-
-        /**
-         * Perform parameter operation
-         */
-        protected function performParameterOperation()
-        {
-            $this->parameter *= 2;
-        }
-
-        /**
-         * Set outputs
-         */
-        protected function setOutputs()
-        {
-            parent::setOutputs();
-
-            $this->outputs
-                ->setParameterInTemplate();
-        }
-
-        /**
-         * set parameter in template
-         */
-        protected function setParameterInTemplate()
-        {
-            $this->templateData['parameter'] = $this->parameter;
-        }
-    }
-
-Notice the extreme verbosity and generalized parameter naming. It's intended for re-use of base classes. If we wanted a tripler controller we could do something like:
-
-    namespace ExampleSiteNamespace;
-
-    class Tripler extends Doubler
-    {
-        /**
-         * Perform parameter operation
-         */
-        protected function performParameterOperation()
-        {
-            $this->parameter *= 3;
-        }
-    }
-
-I'm sure you can imagine the pros and cons for this type of architecture.
-
-### Methodology Three - Bundles
-
-SlabPHP was originally built to serve multiple sites from one codebase allowing each site to re-use code from other ones. Each site is basically a "bundle". During boot-up you define what bundles should boot for specific domains. This allows you to deliver your site code via composer as a bundle.
-
-    $system = new \SlabPHP\Bootstrap();
-    $system
-        ->addSite('example.com', 'ExampleSiteNamespace')
-        ->addSite('sample.com', 'SampleSite')
-        ->pushNamespaceFromServerName();
-
-In your composer you may be delivering a site that lives in \ExampleSiteNamespace and \SampleSite and SlabPHP will push the correct one to the hierarchy based on the $_SERVER['SERVER_NAME'] variable.
+Component | Description
+--- | --- 
+[Core SlabPHP Library](https://github.com/SlabPHP/slabphp) | includes all of these via composer and provides structure for using the framework.
+[Templating and Display Library](https://github.com/SlabPHP/display) | SlabPHP's output and templating library
+[Router](https://github.com/SlabPHP/router) | light-weight web router with validators for routes
+[Component Interface Library](https://github.com/SlabPHP/component-interfaces) | external interface library with shareable testing mocks
+[Debug Utility](https://github.com/SlabPHP/debug) | the debug utility displays a helpful debug bar at the bottom of default SlabPHP pages
+[Base Controller Library](https://github.com/SlabPHP/controllers) | some base controllers to help you get started
+[Bundle Stack Library](https://github.com/SlabPHP/bundle-stack) | manage a hierarchy of bundles so you can easily share code between them
+[Landing Page Bundle](https://github.com/SlabPHP/landing) | this page's source code and an example SlabPHP bundle
+[Sequencer Library](https://github.com/SlabPHP/sequencer) | this library helps you write re-usable controllers by extending controller sequences
+[Database Library](https://github.com/SlabPHP/database) | a simple relational database wrapper with token binding
+[Cache Manager Library](https://github.com/SlabPHP/cache-manager) | a simple cache manager wrapper with memcache and redis providers
+[Configuration Library](https://github.com/SlabPHP/configuration-manager) | a configuration library that loads files from a hierarchy of bundles
+[Session Library](https://github.com/SlabPHP/session-manager) | provides flash data capabilities and session handlers that work in both native and the slabphp session system
+[Input Manager Library](https://github.com/SlabPHP/input-manager) | a small input manager library that sanitizes input to the application
+[Concatenator Library](https://github.com/SlabPHP/concatenator) | a simple library that provides concatenation of files, urls, etc. for use in controllers
 
 ## Production Deployment
 
-Make sure you use no-dev and optimize-autoloader for deploying to production. SlabPHP will install phpunit as a dev dependency along with the debug bar, which is something you don't want appearing on your production website.
+SlabPHP will include PHPUnit and a debug library that can add a debug bar to the standard template. When deploying to production, make sure you use no-dev and optimize-autoloader.
 
     composer update --no-dev -o
+    
+## Feedback, Changes, Comments, Concerns
+
+Feel free to open tickets, [email Salerno Labs LLC staff](https://www.salernolabs.com/contact), or most preferably create pull requests for any changes you'd like in the codebase.
