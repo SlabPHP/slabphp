@@ -31,7 +31,7 @@ Component | Description
 
 ## Production Deployment
 
-SlabPHP will include PHPUnit and a debug library that can add a debug bar to the standard template. When deploying to production, make sure you use no-dev and optimize-autoloader.
+SlabPHP will include PHPUnit and a debug library that can add a [debug bar](docs/debug-bar.md) to the standard template. When deploying to production, make sure you use no-dev and optimize-autoloader.
 
     composer update --no-dev -o
     
