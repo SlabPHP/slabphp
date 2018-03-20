@@ -10,10 +10,10 @@
 
 Creating a SlabPHP project can be as simple as something like this:
 
-    $ mkdir myproject
-    $ cd myproject
-    $ composer init --require slabphp/slabphp monolog/monolog
-    $ php vendor/slabphp/slabphp/bin/bundle/generate.php . myproject
+    mkdir myproject
+    cd myproject
+    composer init --require slabphp/slabphp
+    php vendor/slabphp/slabphp/bin/bundle/generate.php . myproject
     
 This will first create a directory and go into it, initialize composer with the requirement to grab SlabPHP and monolog and then fire off the bundle generator script included in this library. The last step is optional and can be accomplished manually.
 
