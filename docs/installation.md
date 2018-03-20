@@ -13,9 +13,7 @@ Creating a SlabPHP project can be as simple as something like this:
     mkdir myproject
     cd myproject
     composer init --require slabphp/slabphp
-    composer install
     php vendor/slabphp/slabphp/bin/bundle/generate.php . myproject
-    composer dump-autoload
     
 This will first create a directory and go into it, initialize composer with the requirement to grab SlabPHP and monolog and then fire off the bundle generator script included in this library. The last step is optional and can be accomplished manually.
 
@@ -46,7 +44,7 @@ Your project file structure should look as follows:
 * ~/myproject - your root project directory, can be anything really
     * src - psr4 root for \MyProject namespace
     * views - default location where the display configuration will look for your bundles templates
-    * configs - this as a place to store configs for your project
+    * config - this as a place to store configs for your project
     * resources - this as a location to store css/js/sql etc. resources
     * tests - store your tests for your application here
     * docs - store your markdown documents here
@@ -98,7 +96,7 @@ Create the file ~/myprojects/src/Controllers/Homepage.php and edit the contents 
     
 #### 4b. Create the Route
 
-Create/edit the file ~/myprojects/configs/routes.xml and make the contents look something like this.
+Create/edit the file ~/myprojects/config/routes.xml and make the contents look something like this.
 
     <?xml version="1.0" encoding="UTF-8" ?>
     <routes>

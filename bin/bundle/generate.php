@@ -56,11 +56,17 @@ class SlabSetup
             return;
         }
 
+        echo 'Attempting to run composer install...';
+        exec('composer install -d ' . $this->directory);
+
         echo ($this->initializeConfiguration() ? 'Configuration initialized.' : 'Configuration did not complete.') . PHP_EOL;
         echo ($this->initializePublic() ? 'Public initialized.' : 'Public did not complete.') . PHP_EOL;
         echo ($this->initializeSrc() ? 'Src initialized.' : 'Src did not complete.') . PHP_EOL;
         echo ($this->initializeTests() ? 'Test initialized.' : 'Test did not complete.') . PHP_EOL;
         echo ($this->initializeNamespace() ? 'Namespace initialized.' : 'Namespace initialization did not complete.') . PHP_EOL;
+
+        echo 'Attempting to update composer autoloader...';
+        exec('composer dump-autoload -d ' . $this->directory);
 
         echo 'Done!' . PHP_EOL;
     }
@@ -70,7 +76,7 @@ class SlabSetup
      */
     private function initializeConfiguration()
     {
-        $dir = $this->directory . DIRECTORY_SEPARATOR . 'configs';
+        $dir = $this->directory . DIRECTORY_SEPARATOR . 'config';
         if (!$this->createDirIfNotExists($dir)) return false;
 
         if (!$this->installFile('config.php', $dir . DIRECTORY_SEPARATOR . 'default.php')) return false;
