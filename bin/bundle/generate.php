@@ -32,7 +32,7 @@ class SlabSetup
 
         if (!empty($argv[2]))
         {
-            $this->namespace = $argv[2];
+            $this->namespace = ucfirst($argv[2]);
         }
     }
 
@@ -140,15 +140,16 @@ class SlabSetup
 
         if (!$this->createDirIfNotExists($dir)) return false;
 
+        echo 'Copying default SlabPHP public directory.' . PHP_EOL;
+
+        $slabPublic = realpath(__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'public');
+        $this->copyDirectory($slabPublic, $dir);
+
         if (!empty($this->namespace))
         {
             return $this->installFile('index.php', $dir . DIRECTORY_SEPARATOR . 'index.php');
         }
 
-        echo 'Copying default SlabPHP public directory.' . PHP_EOL;
-
-        $slabPublic = realpath(__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'public');
-        $this->copyDirectory($slabPublic, $dir);
         return true;
     }
 
