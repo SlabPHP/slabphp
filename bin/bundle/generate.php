@@ -56,9 +56,6 @@ class SlabSetup
             return;
         }
 
-        echo 'Attempting to run composer install...';
-        exec('composer install -d ' . $this->directory);
-
         echo ($this->initializeConfiguration() ? 'Configuration initialized.' : 'Configuration did not complete.') . PHP_EOL;
         echo ($this->initializePublic() ? 'Public initialized.' : 'Public did not complete.') . PHP_EOL;
         echo ($this->initializeSrc() ? 'Src initialized.' : 'Src did not complete.') . PHP_EOL;

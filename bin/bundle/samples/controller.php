@@ -6,7 +6,7 @@
  * @subpackage Controllers
  * @author SlabSetup
  */
-namespace APPNAMESPACE;
+namespace APPNAMESPACE\Controllers;
 
 class Homepage extends \Slab\Controllers\Page
 {
