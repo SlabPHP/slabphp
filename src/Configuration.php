@@ -78,6 +78,12 @@ class Configuration extends \Slab\Bundle\Standard
             $router->setConfigurationPaths($system->stack()->getConfigDirectories());
             $router->addRouteFile('routes.xml');
             $router->setLog($system->log());
+
+            if ($system->config() && !empty($system->config()->routeFiles)) {
+                foreach ($system->config()->routeFiles as $file) {
+                    $router->addRouteFile($file);
+                }
+            }
         }
 
         return $router;
