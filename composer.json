@@ -42,6 +42,7 @@
     "slabphp/database": "^0.1.0",
     "slabphp/controllers": "^0.1.1",
     "slabphp/landing": "^0.1.0",
-    "monolog/monolog": "^1.23"
+    "monolog/monolog": "^1.23",
+    "ext-mbstring": "^7.0"
   }
 }

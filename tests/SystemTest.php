@@ -27,7 +27,8 @@ class SystemTest extends \PHPUnit\Framework\TestCase
         }
 
         $config = new \Slab\Configuration();
-        $bundleStack = new \Slab\Bundle\Stack($config);
+        $bundleStack = new \Slab\Bundle\Stack();
+        $bundleStack->pushBundle($config);
 
         $system = new \Slab\System($bundleStack);
 

@@ -54,7 +54,8 @@ class Bootstrap
         }
 
         $frameworkConfiguration = new \Slab\Configuration();
-        $this->bundleStack = new \Slab\Bundle\Stack($frameworkConfiguration);
+        $this->bundleStack = new \Slab\Bundle\Stack();
+        $this->bundleStack->pushBundle($frameworkConfiguration);
 
         //Docroot is the location of the index.php
         $this->docroot = $docroot . ((substr($docroot, -1) != DIRECTORY_SEPARATOR) ? DIRECTORY_SEPARATOR : '');
@@ -335,5 +336,4 @@ class Bootstrap
         $display->renderTemplate('pages/errors/boot.php', ['error' => $errorMessage]);
         exit();
     }
-
 }
