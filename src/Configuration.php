@@ -91,11 +91,93 @@ class Configuration extends \Slab\Bundle\Standard
 
     /**
      * @param Components\SystemInterface $system
-     * @return null|Components\Database\DriverInterface
+     * @return null|Components\Database\ProviderInterface
      */
     public function getDatabaseProvider(\Slab\Components\SystemInterface $system)
     {
-        return null;
+        $provider = null;
+
+        try
+        {
+            if (!empty($system->config()->database->mysqli)) {
+                $provider = $this->getMySQLiProvider($system->config()->database->mysqli);
+            }
+        }
+        catch (\Exception $exception)
+        {
+            $system->log()->critical("Failed to instantiate the mysqli database object requested.");
+        }
+
+        if (!empty($provider)) {
+            $provider->setLog($system->log());
+        }
+
+        return $provider;
+    }
+
+    /**
+     * Get mysqli data provider
+     *
+     * @param $configuration
+     * @return \Slab\Database\Providers\MySQL\Provider
+     * @throws \Exception
+     */
+    private function getMySQLiProvider($configuration)
+    {
+        if (!class_exists('\Mysqli')) {
+            throw new \Exception("A mysqli database configuration exists but the extension is not loaded.");
+        }
+
+        $host = 'localhost';
+        $port = null;
+        $user = 'root';
+        $pass = '';
+        $persistent = false;
+        $database = '';
+
+        if (!empty($configuration->host)) {
+            $host = $configuration->host;
+        }
+
+        if (!empty($configuration->port)) {
+            $port = $configuration->port;
+        }
+
+        if (!empty($configuration->user)) {
+            $user = $configuration->user;
+        }
+
+        if (!empty($configuration->pass)) {
+            $pass = $configuration->pass;
+        }
+
+        if (!empty($configuration->persistent)) {
+            $persistent = $configuration->persistent;
+        }
+
+        if (!empty($configuration->database)) {
+            $database = $configuration->database;
+        }
+
+        if ($persistent) {
+            $host = 'p:' . $host;
+        }
+
+        if (!empty($port))
+        {
+            $host .= ':' . $port;
+        }
+
+        $db = new \Mysqli($host, $user, $pass, $database, $port);
+
+        if ($db->connect_error) {
+            throw new \Exception("Failed to connect: " . $db->connect_error);
+        }
+
+        $databaseProvider = new \Slab\Database\Providers\MySQL\Provider();
+        $databaseProvider->setMySQL($db);
+
+        return $databaseProvider;
     }
 
     /**
