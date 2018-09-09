@@ -171,6 +171,13 @@ class System implements \Slab\Components\SystemInterface
             if (empty($this->session) && ($sessionHandler = $bundle->getSessionHandler($this))) {
                 $this->session = new \Slab\Session\Driver();
                 $this->session->setHandler($sessionHandler);
+
+                try {
+                    $this->session->start();
+                } catch (\Exception $exception) {
+                    $this->log()->critical('Failed to initialize session handler!', [$exception]);
+                }
+
                 break;
             }
         }
