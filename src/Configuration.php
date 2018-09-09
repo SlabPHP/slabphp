@@ -11,6 +11,12 @@ namespace Slab;
 class Configuration extends \Slab\Bundle\Standard
 {
     /**
+     * Memoization for database clients if you want to re-use them
+     * @var array
+     */
+    private $databaseClients = [];
+
+    /**
      * @return \Psr\Log\LoggerInterface|null
      */
     public function getLogger()
@@ -100,7 +106,10 @@ class Configuration extends \Slab\Bundle\Standard
         try
         {
             if (!empty($system->config()->database->mysqli)) {
-                $provider = $this->getMySQLiProvider($system->config()->database->mysqli);
+                $provider = new \Slab\Database\Providers\MySQL\Provider();
+                $provider->setMySQL(
+                    $this->getMysqliClient($system->config()->database->mysqli)
+                );
             }
         }
         catch (\Exception $exception)
@@ -116,14 +125,18 @@ class Configuration extends \Slab\Bundle\Standard
     }
 
     /**
-     * Get mysqli data provider
+     * Get MySQLi Client
      *
      * @param $configuration
-     * @return \Slab\Database\Providers\MySQL\Provider
+     * @return \Mysqli
      * @throws \Exception
      */
-    private function getMySQLiProvider($configuration)
+    private function getMysqliClient($configuration)
     {
+        if (!empty($this->databaseClients['mysqli'])) {
+            return $this->databaseClients['mysqli'];
+        }
+
         if (!class_exists('\Mysqli')) {
             throw new \Exception("A mysqli database configuration exists but the extension is not loaded.");
         }
@@ -174,10 +187,9 @@ class Configuration extends \Slab\Bundle\Standard
             throw new \Exception("Failed to connect: " . $db->connect_error);
         }
 
-        $databaseProvider = new \Slab\Database\Providers\MySQL\Provider();
-        $databaseProvider->setMySQL($db);
+        $this->databaseClients['mysqli'] = $db;
 
-        return $databaseProvider;
+        return $db;
     }
 
     /**
@@ -186,7 +198,52 @@ class Configuration extends \Slab\Bundle\Standard
      */
     public function getSessionHandler(\Slab\Components\SystemInterface $system)
     {
-        return new \Slab\Session\Handlers\File();
+        if (empty($system->config()->session->handler) || $system->config()->session->handler === 'file') {
+            return new \Slab\Session\Handlers\File();
+        }
+
+        if ($system->config()->session->handler === 'mysqli') {
+            try {
+                return $this->getMysqliDatabaseSessionHandler($system);
+            } catch (\Exception $exception) {
+                $system->log()->critical("Failed to instantiate a MySQLi session handler.", [$exception]);
+                return null;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @param Components\SystemInterface $system
+     * @return Session\Handlers\Database\MySQL
+     * @throws \Exception
+     */
+    private function getMysqliDatabaseSessionHandler(\Slab\Components\SystemInterface $system)
+    {
+        $handler = new \Slab\Session\Handlers\Database\MySQL();
+
+        $mysqlClient = $this->getMysqliClient($system->config()->database->mysqli);
+        $mysqlDatabase = null;
+        $mysqlTable = 'sessions';
+        $sessionSite = !empty($_SERVER['SERVER_NAME']) ? $_SERVER['SERVER_NAME'] : 'unspecified';
+
+        if (!empty($system->config()->session->database)) {
+            $mysqlDatabase = $system->config()->session->database;
+        } else if (!empty($system->config()->database->mysqli->database)) {
+            $mysqlDatabase = $system->config()->database->mysqli->database;
+        }
+
+        if (!empty($system->config()->session->table)) {
+            $mysqlTable = $system->config()->session->table;
+        }
+
+        if (!empty($system->config()->session->site)) {
+            $sessionSite = $system->config()->session->site;
+        }
+
+        $handler->setDatabase($mysqlClient, $mysqlDatabase, $mysqlTable, $sessionSite);
+        return $handler;
     }
 
     /**
