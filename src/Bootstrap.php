@@ -192,14 +192,18 @@ class Bootstrap
                 $system->setDebug($this->debug);
                 $this->debug->endBenchmark('system initialization');
             }
-
-            $route = $system->routeRequest();
         } catch (\Slab\Exceptions\System\ObjectCreationFailure $exception) {
             $this->bootstrapError("Failed to create boot objects for SlabPHP system: " . $exception->getMessage());
             return;
         } catch (\Exception $exception) {
-            $this->bootstrapError("Unknown exception occurred while booting SlabPHP:" . $exception->getMessage());
+            $this->bootstrapError("Unknown exception occurred while booting SlabPHP: " . $exception->getMessage());
             return;
+        }
+
+        try {
+            $system->routeRequest();
+        } catch (\Exception $exception) {
+            $system->log()->critical("Unhandled Controller Exception", [$exception]);
         }
     }
 
