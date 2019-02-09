@@ -18,5 +18,8 @@ class BootstrapTest extends \PHPUnit\Framework\TestCase
         $bootstrap = new \Slab\Bootstrap(__DIR__ . '/public');
 
         $bootstrap->pushNamespace('Slab\Tests\Mocks');
+
+        // We haven't completely exploded, lets pat ourselves on the back
+        $this->addToAssertionCount(1);
     }
 }
