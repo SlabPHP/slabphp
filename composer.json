@@ -44,5 +44,8 @@
     "slabphp/landing": "^0.1.0",
     "monolog/monolog": "^1.23",
     "ext-mbstring": "^7.0"
+  },
+  "suggest": {
+    "ext-mysqli": "Include mysqli extension to use built-in database providers."
   }
 }
