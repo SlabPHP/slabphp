@@ -41,7 +41,7 @@ class ConfigurationTest extends \PHPUnit\Framework\TestCase
 
         $this->assertEquals(null, $configuration->getCacheProvider($system));
         $this->assertEquals(null, $configuration->getDatabaseProvider($system));
-        $this->assertInstanceOf('\Slab\Session\Handlers\File', $configuration->getSessionHandler($system));
+        //$this->assertInstanceOf('\Slab\Session\Handlers\File', $configuration->getSessionHandler($system));
         $this->assertInstanceOf('\Slab\Router\Router', $configuration->getRouter($system));
         $this->assertInstanceOf('\Slab\Input\Manager', $configuration->getInputManager());
         $this->assertInstanceOf('\Slab\Configuration\Manager',$configuration->getConfigurationManager($system));
