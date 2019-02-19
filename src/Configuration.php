@@ -54,6 +54,7 @@ class Configuration extends \Slab\Bundle\Standard
     public function getConfigurationManager(\Slab\Components\SystemInterface $system)
     {
         $configuration = new \Slab\Configuration\Manager();
+        $configuration->setLogger($system->log());
 
         if ($system->stack())
         {
@@ -107,6 +108,7 @@ class Configuration extends \Slab\Bundle\Standard
         {
             if (!empty($system->config()->database->mysqli)) {
                 $provider = new \Slab\Database\Providers\MySQL\Provider();
+                $provider->setLog($system->log());
                 $provider->setMySQL(
                     $this->getMysqliClient($system->config()->database->mysqli)
                 );
@@ -115,10 +117,6 @@ class Configuration extends \Slab\Bundle\Standard
         catch (\Exception $exception)
         {
             $system->log()->critical("Failed to instantiate the mysqli database object requested.");
-        }
-
-        if (!empty($provider)) {
-            $provider->setLog($system->log());
         }
 
         return $provider;

@@ -141,6 +141,7 @@ class System implements \Slab\Components\SystemInterface
             if (empty($this->configuration) && ($configuration = $bundle->getConfigurationManager($this)))
             {
                 $this->configuration = $configuration;
+                $this->configuration->setLogger($this->log());
                 $this->configuration->loadConfiguration();
                 break;
             }
@@ -154,6 +155,7 @@ class System implements \Slab\Components\SystemInterface
 
             if (empty($this->db) && ($databaseProvider = $bundle->getDatabaseProvider($this))) {
                 $this->db = new \Slab\Database\Driver();
+                $this->db->setLog($this->log());
                 $this->db->setProvider($databaseProvider);
                 break;
             }
@@ -162,6 +164,7 @@ class System implements \Slab\Components\SystemInterface
         foreach ($bundles as $bundle) {
             if (empty($this->cache) && ($cacheProvider = $bundle->getCacheProvider($this))) {
                 $this->cache = new \Slab\Cache\Driver();
+                $this->cache->setLog($this->log());
                 $this->cache->setProvider($cacheProvider);
                 break;
             }
@@ -170,6 +173,19 @@ class System implements \Slab\Components\SystemInterface
         foreach ($bundles as $bundle) {
             if (empty($this->session) && ($sessionHandler = $bundle->getSessionHandler($this))) {
                 $this->session = new \Slab\Session\Driver();
+                $this->session->setLog($this->log());
+                $this->session->setCookieParameters(
+                    !empty($this->configuration->session->cookie->name) ?
+                        $this->configuration->session->cookie->name : 'session',
+                    !empty($this->configuration->session->cookie->expiration) ?
+                        $this->configuration->session->cookie->expiration : 0,
+                    !empty($this->configuration->session->cookie->path) ?
+                        $this->configuration->session->cookie->path : '/',
+                    !empty($this->configuration->session->cookie->domain) ?
+                        $this->configuration->session->cookie->domain : $_SERVER['HTTP_HOST'],
+                    !empty($this->configuration->session->cookie->secure) ?
+                        $this->configuration->session->cookie->secure : false
+                );
                 $this->session->setHandler($sessionHandler);
 
                 try {
