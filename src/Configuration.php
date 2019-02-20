@@ -221,6 +221,10 @@ class Configuration extends \Slab\Bundle\Standard
     {
         $handler = new \Slab\Session\Handlers\Database\MySQL();
 
+        if (empty($system->config()->database->mysqli)) {
+            throw new \Exception('Missing config->database->mysqli, cant setup session handler.');
+        }
+
         $mysqlClient = $this->getMysqliClient($system->config()->database->mysqli);
         $mysqlDatabase = null;
         $mysqlTable = 'sessions';
